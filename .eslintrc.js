@@ -73,6 +73,7 @@ module.exports = {
     'jsx-a11y/no-autofocus': 0,
     'jsx-a11y/no-static-element-interactions': 0,
     'react/no-array-index-key': 0,
+    'react/jsx-indent': [enabled, 'tab' | 2, { checkAttributes: true, indentLogicalExpressions: true }],
     'jsx-a11y/anchor-is-valid': [
       'error',
       {
