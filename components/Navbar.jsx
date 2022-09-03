@@ -6,9 +6,66 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import images from '../assets';
+import { Button } from './';
+
+const MenuItems = ({ isMobile, active, setActive }) => {
+    const generateLink = (i) => {
+        switch (i) {
+            case 0:
+                return '/';
+            case 1:
+                return '/created-nfts';
+            case 2:
+                return '/my-nfts';
+
+            default:
+                return '/';
+        }
+    };
+
+    return (
+        <ul className={`list-none flexCenter flex-row ${isMobile && 'flex-col h-full'}`}>
+            {['Explore NFTs', 'Listed NFTs', 'My NFTs'].map((item, i) => (
+                <li
+                    key={i}
+                    onClick={() => {
+                        setActive(item);
+                    }}
+                    className={`flex md:py-2 flex-row items-center font-poppins font-semibold text-base dark:hover:text-white hover:text-nft-dark mx-3
+                    ${active === item ? 'dark:text-white text-nft-black-1' : 'dark:text-nft-gray-3 text-nft-gray-2'}`}
+                >
+                    <Link href={generateLink(i)}>{item}</Link>
+                </li>
+            ))}
+        </ul>
+    );
+}
+
+const ButtonGroup = ({ setActive, router }) => {
+    const hasConnected = true;
+
+    return hasConnected ? (
+        <Button
+            btnName='Create'
+            classStyles='mx-2 rounded-xl'
+            handleClick={() => {
+                setActive('');
+                router.push('/create-nft');
+            }}
+        />
+    ) : <Button
+        btnName='Connect'
+        classStyles='mx-2 rounded-xl'
+        handleClick={() => { }}
+    />;
+
+}
 
 const Navbar = () => {
     const { theme, setTheme } = useTheme();
+    const [active, setActive] = useState('Explore NFTs');
+    const [isOpen, setIsOpen] = useState(false);
+    const router = useRouter();
     console.log({ theme })
     return (
         <nav className='fixed z-10 flex-row w-full p-4 bg-white border-b flexBetween dark:bg-nft-dark dark:border-nft-gray-1 border-nft-gray-1'>
@@ -34,10 +91,53 @@ const Navbar = () => {
                         <div className='absolute w-3 h-3 bg-white rounded-full ball' />
                     </label>
                 </div>
+
+                <div className='flex md:hidden'>
+                    <MenuItems active={active} setActive={setActive} />
+                    <div className='ml-4'>
+                        <ButtonGroup setActive={setActive} router={router} />
+                    </div>
+                </div>
             </div>
-            <div className='flex md:hidden'>
-                MenuItems
+
+            <div className='hidden ml-2 md:flex'>
+                {isOpen
+                    ? (
+                        <Image
+                            src={images.cross}
+                            objectFit='contain'
+                            width={22}
+                            height={22}
+                            alt='close'
+                            onClick={() => setIsOpen(false)}
+                            className={theme === 'light' && 'filter invert'}
+                        />
+                    )
+                    : (
+                        <Image
+                            src={images.menu}
+                            objectFit='contain'
+                            width={25}
+                            height={25}
+                            alt='menu'
+                            onClick={() => setIsOpen(true)}
+                            className={theme === 'light' && 'filter invert'}
+                        />
+                    )
+                }
+
+                {isOpen && (
+                    <div className='fixed inset-0 z-10 flex flex-col justify-between bg-white top-65 dark:bg-nft-dark nav-h'>
+                        <div className='flex-1 p-4'>
+                            <MenuItems active={active} setActive={setActive} isMobile />
+                        </div>
+                        <div className='flex justify-center p-4 border-t dark:border-nft-black-1 border-nft-gray-1'>
+                            <ButtonGroup setActive={setActive} router={router} />
+                        </div>
+                    </div>
+                )}
             </div>
+
         </nav>
     )
 }
